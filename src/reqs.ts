@@ -1,0 +1,16 @@
+import { faker } from "@faker-js/faker";
+import axios from "axios";
+
+const obj = {
+  bookname: faker.definitions.title,
+  author: faker.name.fullName(),
+  price: Number((Math.random() * 100).toFixed(2)),
+  review: faker.lorem.paragraph(3),
+};
+
+const url = "http://localhost:4000/api/register-book";
+const doRequest = async () => {
+  await axios.post(url, obj);
+};
+
+doRequest();

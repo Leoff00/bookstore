@@ -1,0 +1,7 @@
+{
+  "id": "string",
+  "bookname": "string",
+  "author": "string",
+  "price": "string",
+  "review": "string"
+}
