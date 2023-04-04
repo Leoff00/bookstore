@@ -27,12 +27,12 @@ export class bookstore1680284302347 implements MigrationInterface {
             type: "varchar",
           },
           {
-            name: "created_at",
+            name: "createdDate",
             type: "timestamp",
             default: "now()",
           },
           {
-            name: "updated_at",
+            name: "updatedDate",
             type: "timestamp",
             default: "now()",
           },

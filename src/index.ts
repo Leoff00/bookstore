@@ -1,24 +1,23 @@
 import express from "express";
+import "express-async-errors";
+import client from "prom-client";
 import router from "./router";
 import cors from "cors";
-import client from "prom-client";
 import { AppDataSource } from "./datasource";
 
-const histogram = new client.Histogram({
-  name: "metric_name",
-  help: "metric_help",
-  buckets: [0.1, 5, 15, 50, 100, 500],
-});
+const application = express();
 
-AppDataSource.initialize().then(() => {
-  const application = express();
-  histogram.observe(10);
+const collectDefaultMetrics = client.collectDefaultMetrics;
 
-  application.use(express.json());
-  application.use(cors());
-  application.use(router);
-  return application.listen(4000, () => {
-    console.log(AppDataSource.isInitialized);
-    console.log("listening on port http://localhost:4000");
+application.use(express.json());
+application.use(cors());
+application.use(router);
+
+application.listen(3001, () => {
+  collectDefaultMetrics();
+  AppDataSource.initialize().then(() => {
+    console.log("DB initialized?", AppDataSource.isInitialized);
   });
+
+  console.log("listening on port http://bookstoreapp:3001");
 });

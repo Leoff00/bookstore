@@ -23,9 +23,9 @@ export class Bookstore {
   @Column()
   review: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamp" })
   createdDate: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamp" })
   updatedDate: Date;
 }

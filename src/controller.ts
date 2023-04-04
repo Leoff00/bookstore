@@ -1,38 +1,47 @@
 import { Request, Response } from "express";
 import { BookstoreRepository } from "./repository";
 import { BookDTO } from "./interface";
+import client from "prom-client";
 
 const repository = new BookstoreRepository();
 
 export class BookstoreController {
+  static metricsController(request: Request, response: Response) {
+    response.set("Content-Type", client.register.contentType);
+    return response.end(client.register.metrics());
+  }
+
   static async getBooksController(request: Request, response: Response) {
-    const data = await repository.getBooks();
+    const registry = new client.Registry();
 
-    return response.status(200).json({
-      data,
+    const counter = new client.Counter({
+      registers: [registry],
+      name: "metric_request_get_total",
+      help: "numero total de reqs",
+      labelNames: ["methods", "route", "status"],
     });
-  }
 
-  static async getBooksByPriceController(request: Request, response: Response) {
-    const { price } = request.query as any;
+    const limit = parseInt(request?.query?.limit as any) || 10;
+    const offset = parseInt(request?.query?.offset as any) || 0;
+    const sortBy = request?.query?.sortBy || ("" as any);
 
-    const data = await repository.getBooksByPrice(parseFloat(price));
+    const { data, totalPages, total } = await repository.getBooks(
+      sortBy,
+      limit,
+      offset
+    );
 
-    return response.status(200).json({
-      data,
+    counter.inc({
+      methods: "GET",
+      route: "/api/get-books",
+      status: response.statusCode,
     });
-  }
-
-  static async getBooksPerPageController(request: Request, response: Response) {
-    const limit = parseInt(request.query.limit as any) || 0;
-    const offset = parseInt(request.query.offset as any) || 0;
-    const skip = parseInt(request.query.skip as any) || 0;
-    const take = parseInt(request.query.take as any) || 0;
-
-    const data = await repository.getBooksPerPage(limit, offset, skip, take);
 
     return response.status(200).json({
       data,
+      pageSize: limit,
+      totalPages,
+      total,
     });
   }
 
