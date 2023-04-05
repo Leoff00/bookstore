@@ -1,26 +1,18 @@
 import { Request, Response } from "express";
 import { BookstoreRepository } from "./repository";
 import { BookDTO } from "./interface";
-import client from "prom-client";
+import client, { counter, histogram } from "./metrify";
 
 const repository = new BookstoreRepository();
 
 export class BookstoreController {
-  static metricsController(request: Request, response: Response) {
+  static async metricsController(request: Request, response: Response) {
+    const registerMetrics = await client.register.metrics();
     response.set("Content-Type", client.register.contentType);
-    return response.end(client.register.metrics());
+    return response.end(registerMetrics);
   }
 
   static async getBooksController(request: Request, response: Response) {
-    const registry = new client.Registry();
-
-    const counter = new client.Counter({
-      registers: [registry],
-      name: "metric_request_get_total",
-      help: "numero total de reqs",
-      labelNames: ["methods", "route", "status"],
-    });
-
     const limit = parseInt(request?.query?.limit as any) || 10;
     const offset = parseInt(request?.query?.offset as any) || 0;
     const sortBy = request?.query?.sortBy || ("" as any);
@@ -31,10 +23,16 @@ export class BookstoreController {
       offset
     );
 
+    const [START, SIMULATE_TIME] = [Date.now(), 1000];
+    setTimeout(() => {
+      let END = Number(Date.now() - START);
+      histogram.observe(END / 1000);
+    }, SIMULATE_TIME);
+
     counter.inc({
       methods: "GET",
       route: "/api/get-books",
-      status: response.statusCode,
+      status: 200,
     });
 
     return response.status(200).json({

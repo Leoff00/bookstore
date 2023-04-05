@@ -8,23 +8,23 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     networks:
-      - bookstore_net
+      - bookstore
     ports:
       - 5432:5432
     volumes:
       - .docker/pgdata:/var/lib/postgresql/data
 
   bookstoreapp:
-    container_name: bookstoreapp
+    container_name: bookstore_app
     networks:
-      - bookstore_net
+      - bookstore
     image: leoff00/bookstore_app:latest
     ports:
       - 3001:3001
 
   prometheus:
     networks:
-      - bookstore_net
+      - bookstore
     image: prom/prometheus:latest
     command: ["--config.file=/config/prometheus.yml"]
     ports:
@@ -35,7 +35,7 @@ services:
 
   grafana:
     networks:
-      - bookstore_net
+      - bookstore
     depends_on:
       - prometheus
     image: grafana/grafana:latest
@@ -44,11 +44,11 @@ services:
     volumes:
       - .docker/grafana:/var/lib/grafana
 
-networks:
-  bookstore_net:
-    driver: bridge
-
 volumes:
   pgdata:
   prometheus-data:
   grafana:
+
+networks:
+  bookstore:
+    driver: bridge

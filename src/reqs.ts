@@ -8,7 +8,7 @@ const obj = {
   review: faker.lorem.paragraph(3),
 };
 
-const url = "http://localhost:4000/api/register-book";
+const url = "http://localhost:3001/api/register-book";
 
 const doRequest = async () => {
   await axios.post(url, obj);

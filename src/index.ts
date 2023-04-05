@@ -9,12 +9,12 @@ const application = express();
 
 const collectDefaultMetrics = client.collectDefaultMetrics;
 
+collectDefaultMetrics({ prefix: "myapp" });
 application.use(express.json());
 application.use(cors());
 application.use(router);
 
 application.listen(3001, () => {
-  collectDefaultMetrics();
   AppDataSource.initialize().then(() => {
     console.log("DB initialized?", AppDataSource.isInitialized);
   });

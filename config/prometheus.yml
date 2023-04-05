@@ -9,5 +9,5 @@ scrape_configs:
 - job_name: myapp
   metrics_path: /metrics
   static_configs:
-    - targets: ["localhost:3001", "localhost:9090"]
+    - targets: ["bookstoreapp:3001", "localhost:9090"]
 
