@@ -6,9 +6,10 @@ Steps to run this project:
 
 1. Run `yarn` command
 2. Setup database settings inside `datasource.ts` file
-3. Run `yarn mig:run` command
-4. Run `yarn dev` command to run app
-5. Populate your **db** with data, then open grafana in `http://localhost:3000`
+3. Run `docker-compose up --build` to connect with db
+4. Run `yarn mig:run` command
+5. Run `yarn dev` command to run app
+6. Populate your **db** with data, then open grafana in `http://localhost:3000`
 
 Finally, you can access http://localhost/metrics to monitoring the 
 endpoint http://localhost/api/get-books (the unique) to create some metrics about.
